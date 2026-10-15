@@ -1,237 +1,486 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinArc: Cyber Farmer</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { background: #0d0f17; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        #game-container { position: relative; width: 1000px; height: 600px; background: #121526; border: 3px solid #00f0ff; border-radius: 12px; box-shadow: 0 0 30px rgba(0,240,255,0.2); overflow: hidden; }
-        canvas { display: block; width: 100%; height: 100%; }
-        
-        /* UI Screens */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(13,15,23,0.92); z-index: 10; padding: 20px; }
-        .hidden { display: none !important; }
-        
-        h1 { font-size: 2.8rem; color: #00f0ff; text-shadow: 0 0 10px #00f0ff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        p { color: #a0aec0; margin-bottom: 20px; text-align: center; max-width: 600px; }
-        
-        .btn { background: linear-gradient(135deg, #00f0ff, #7000ff); color: #fff; border: none; padding: 12px 28px; font-size: 1.1rem; font-weight: bold; border-radius: 6px; cursor: pointer; margin: 8px; transition: 0.2s; text-transform: uppercase; }
-        .btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #00f0ff; }
-        .btn-secondary { background: #2d3748; color: #cbd5e0; }
-        .btn-secondary:hover { background: #4a5568; box-shadow: none; }
-        
-        /* Customization Slot */
-        .card { background: #1a1d36; border: 1px solid #00f0ff44; padding: 20px; border-radius: 8px; width: 360px; margin-bottom: 15px; }
-        .form-group { margin-bottom: 12px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; color: #00f0ff; margin-bottom: 4px; text-transform: uppercase; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; background: #0d0f17; border: 1px solid #2d3748; color: #fff; border-radius: 4px; font-size: 1rem; }
-        
-        /* In-game HUD */
-        #hud { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; z-index: 5; pointer-events: none; }
-        .hud-card { background: rgba(18,21,38,0.85); border: 1px solid #00f0ff44; padding: 10px 16px; border-radius: 8px; pointer-events: auto; }
-        .hud-title { font-size: 0.75rem; color: #a0aec0; text-transform: uppercase; }
-        .hud-val { font-size: 1.3rem; font-weight: bold; color: #00f0ff; }
-        
-        /* Dialogue Box */
-        #dialogue-box { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 80%; background: rgba(18,21,38,0.95); border: 2px solid #00f0ff; border-radius: 8px; padding: 15px 20px; z-index: 6; display: flex; flex-direction: column; gap: 8px; }
-        #dialogue-name { color: #7000ff; font-weight: bold; font-size: 1.1rem; }
-        #dialogue-text { color: #e2e8f0; font-size: 0.95rem; line-height: 1.4; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0d0f17;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: #121526;
+            border: 3px solid #00f0ff;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+            overflow: hidden;
+        }
+
+        /* TINTAS DO MENU */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, rgba(20,25,45,1) 0%, rgba(10,12,20,1) 100%);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #00f0ff;
+            text-shadow: 0 0 10px #00f0ff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #a0a5c0;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #7000ff, #00f0ff);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(112, 0, 255, 0.4);
+            width: 220px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(0, 240, 255, 0.6);
+        }
+
+        /* JOGO CANVAS */
+        canvas {
+            display: block;
+            background-color: #1a251e;
+        }
+
+        /* HUD DO JOGO */
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .hud-card {
+            background: rgba(15, 18, 30, 0.85);
+            border: 1px solid #00f0ff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* CAIXA DE DIÁLOGO / QUIZ */
+        #dialog-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: rgba(10, 12, 24, 0.95);
+            border: 2px solid #7000ff;
+            border-radius: 10px;
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        #dialog-title {
+            color: #00f0ff;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        #dialog-text {
+            font-size: 0.95rem;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+
+        .dialog-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .dialog-btn {
+            background: #252a40;
+            border: 1px solid #7000ff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .dialog-btn:hover {
+            background: #7000ff;
+        }
+
+        /* PAINEL DE CONTROLES NO JOGO */
+        #controls-hint {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 0.75rem;
+            color: #888;
+            pointer-events: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <canvas id="gameCanvas" width="1000" height="600"></canvas>
-
-    <!-- HUD In-Game -->
-    <div id="hud" class="hidden">
-        <div class="hud-card">
-            <div class="hud-title">Carteira Circle (USDC)</div>
-            <div id="hud-usdc" class="hud-val">$100.00</div>
+    <div id="game-container">
+        <!-- MENU PRINCIPAL -->
+        <div id="main-menu" class="screen">
+            <h1>FINARC: CYBER FARMER</h1>
+            <p class="subtitle">Aprenda Educação Financeira e Gestão de USDC construindo a sua Fazenda Sustentável na Rede Arc.</p>
+            <button class="btn" onclick="startGame()">NOVO JOGO</button>
+            <button class="btn" onclick="showScreen('settings-screen')">CONFIGURAÇÕES</button>
         </div>
-        <div class="hud-card">
-            <div class="hud-title">Educação Financeira</div>
-            <div id="hud-score" class="hud-val" style="color: #7000ff;">Nível 1</div>
+
+        <!-- TELA DE CONFIGURAÇÕES -->
+        <div id="settings-screen" class="screen hidden">
+            <h1>CONFIGURAÇÕES</h1>
+            <p class="subtitle">Ajustes do jogo e áudio.</p>
+            <button class="btn" onclick="toggleAudio()">ÁUDIO: <span id="audio-status">LIGADO</span></button>
+            <button class="btn" onclick="showScreen('main-menu')">VOLTAR</button>
         </div>
-    </div>
 
-    <!-- Caixa de Diálogo -->
-    <div id="dialogue-box" class="hidden">
-        <div id="dialogue-name">NPC</div>
-        <div id="dialogue-text">Olá! Bem-vindo ao FinArc.</div>
-        <button class="btn" style="align-self: flex-end; padding: 6px 14px; font-size: 0.85rem;" onclick="closeDialogue()">Continuar</button>
-    </div>
-
-    <!-- Menu Principal -->
-    <div id="menu-screen" class="overlay">
-        <h1>FinArc: Cyber Farmer</h1>
-        <p>Aprenda educação financeira e gestão de USDC enquanto constrói sua fazenda sustentável na rede Arc.</p>
-        <button class="btn" onclick="showScreen('char-screen')">Novo Jogo</button>
-        <button class="btn btn-secondary" onclick="showScreen('settings-screen')">Configurações</button>
-    </div>
-
-    <!-- Configurações -->
-    <div id="settings-screen" class="overlay hidden">
-        <h1>Configurações</h1>
-        <div class="card">
-            <div class="form-group">
-                <label>Efeitos Sonoros</label>
-                <select id="audio-opt"><option>Ativado</option><option>Desativado</option></select>
-            </div>
-            <div class="form-group">
-                <label>Velocidade do Texto</label>
-                <select><option>Rápido</option><option>Normal</option></select>
-            </div>
+        <!-- HUD DO JOGO -->
+        <div id="hud" class="hidden">
+            <div class="hud-card">💰 USDC: <span id="usdc-val">100</span></div>
+            <div class="hud-card">🌱 Sementes: <span id="seeds-val">3</span></div>
+            <div class="hud-card">📦 Colheitas: <span id="crops-val">0</span></div>
         </div>
-        <button class="btn" onclick="showScreen('menu-screen')">Voltar</button>
-    </div>
 
-    <!-- Criação de Personagem -->
-    <div id="char-screen" class="overlay hidden">
-        <h1>Criar Personagem</h1>
-        <div class="card">
-            <div class="form-group">
-                <label>Nome do Agricultor</label>
-                <input type="text" id="char-name" value="Alex" maxlength="12">
-            </div>
-            <div class="form-group">
-                <label>Cor da Roupa</label>
-                <select id="char-color">
-                    <option value="#00f0ff">Azul Cyber</option>
-                    <option value="#7000ff">Roxo Neon</option>
-                    <option value="#00ff88">Verde Bio</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Ferramenta Inicial</label>
-                <select id="char-tool">
-                    <option value="hoe">Enxada de Bio-Solo</option>
-                    <option value="can">Regador Inteligente</option>
-                </select>
-            </div>
+        <div id="controls-hint" class="hidden">Use <b>W, A, S, D</b> ou as <b>Setas</b> para mover. Pressione <b>E</b> para interagir.</div>
+
+        <!-- DIÁLOGOS / QUIZ -->
+        <div id="dialog-box">
+            <div id="dialog-title">NPC FINANCISTA</div>
+            <div id="dialog-text">Olá! Queres aprender sobre rendimento na rede Arc?</div>
+            <div class="dialog-options" id="dialog-options"></div>
         </div>
-        <button class="btn" onclick="startGame()">Iniciar Jornada</button>
+
+        <!-- CANVAS DO JOGO -->
+        <canvas id="gameCanvas" width="800" height="600" class="hidden"></canvas>
     </div>
-</div>
 
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    <script>
+        // CONFIGURAÇÃO DO JOGO
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-    // Estado do Jogo
-    let gameState = 'MENU';
-    let player = { x: 500, y: 300, size: 24, speed: 4, name: 'Alex', color: '#00f0ff', tool: 'hoe', usdc: 100, score: 1 };
-    let keys = {};
-    let npcs = [
-        { x: 300, y: 200, name: 'Kai (Consultor Circle)', color: '#00ff88', dialog: 'Lembre-se: Antes de gastar seu USDC com melhorias luxuosas, crie uma reserva de emergência no protocolo Arc!' },
-        { x: 700, y: 400, name: 'Elena (Especialista DeFi)', color: '#7000ff', dialog: 'Investir o USDC parado na fazenda em staking na rede Arc gera rendimentos passivos diários!' }
-    ];
+        let audioEnabled = true;
+        let gameState = 'MENU';
 
-    function showScreen(screenId) {
-        document.querySelectorAll('.overlay').forEach(s => s.classList.add('hidden'));
-        document.getElementById(screenId).classList.remove('hidden');
-    }
+        // RECURSOS DO JOGADOR
+        let player = {
+            x: 400,
+            y: 300,
+            size: 20,
+            speed: 4,
+            usdc: 100,
+            seeds: 3,
+            crops: 0
+        };
 
-    function startGame() {
-        player.name = document.getElementById('char-name').value || 'Alex';
-        player.color = document.getElementById('char-color').value;
-        player.tool = document.getElementById('char-tool').value;
+        const keys = {};
 
-        showScreen('');
-        document.getElementById('hud').classList.remove('hidden');
-        gameState = 'PLAYING';
-        gameLoop();
-    }
+        // ELEMENTOS DO MAPA (MAPA ABERTO)
+        const farmPlots = [
+            { x: 200, y: 150, state: 'empty', timer: 0 },
+            { x: 260, y: 150, state: 'empty', timer: 0 },
+            { x: 320, y: 150, state: 'empty', timer: 0 },
+            { x: 200, y: 210, state: 'empty', timer: 0 },
+            { x: 260, y: 210, state: 'empty', timer: 0 },
+            { x: 320, y: 210, state: 'empty', timer: 0 }
+        ];
 
-    window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-    window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+        const npc = {
+            x: 550,
+            y: 200,
+            size: 24,
+            name: "Mentor Financeiro"
+        };
 
-    function update() {
-        if (gameState !== 'PLAYING') return;
+        const market = {
+            x: 600,
+            y: 400,
+            size: 50,
+            name: "Mercado USDC"
+        };
 
-        if (keys['w'] || keys['arrowup']) player.y -= player.speed;
-        if (keys['s'] || keys['arrowdown']) player.y += player.speed;
-        if (keys['a'] || keys['arrowleft']) player.x -= player.speed;
-        if (keys['d'] || keys['arrowright']) player.x += player.speed;
+        // CONTROLO DE TELAS
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+        }
 
-        // Limites da tela
-        player.x = Math.max(20, Math.min(980, player.x));
-        player.y = Math.max(20, Math.min(580, player.y));
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('audio-status').innerText = audioEnabled ? "LIGADO" : "DESLIGADO";
+        }
 
-        // Interação com NPCs (Pressionar E)
-        npcs.forEach(npc => {
-            let dist = Math.hypot(player.x - npc.x, player.y - npc.y);
-            if (dist < 40 && keys['e']) {
-                openDialogue(npc.name, npc.dialog);
+        function startGame() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('hud').classList.remove('hidden');
+            document.getElementById('controls-hint').classList.remove('hidden');
+            canvas.classList.remove('hidden');
+            gameState = 'PLAYING';
+            gameLoop();
+        }
+
+        // EVENTOS DE TECLADO
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            if (e.key.toLowerCase() === 'e' && gameState === 'PLAYING') {
+                checkInteractions();
             }
         });
-    }
 
-    function openDialogue(name, text) {
-        document.getElementById('dialogue-name').innerText = name;
-        document.getElementById('dialogue-text').innerText = text;
-        document.getElementById('dialogue-box').classList.remove('hidden');
-        gameState = 'DIALOGUE';
-    }
-
-    function closeDialogue() {
-        document.getElementById('dialogue-box').classList.add('hidden');
-        gameState = 'PLAYING';
-    }
-
-    function draw() {
-        // Fundo (Grama / Terra Cyber)
-        ctx.fillStyle = '#121526';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Desenhar Grid da Fazenda
-        ctx.strokeStyle = '#1d223a';
-        for(let x = 0; x < canvas.width; x += 40) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-        }
-        for(let y = 0; y < canvas.height; y += 40) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-        }
-
-        // Desenhar NPCs
-        npcs.forEach(npc => {
-            ctx.fillStyle = npc.color;
-            ctx.beginPath();
-            ctx.arc(npc.x, npc.y, 16, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = '12px Segoe UI';
-            ctx.textAlign = 'center';
-            ctx.fillText(npc.name.split(' ')[0], npc.x, npc.y - 22);
-            ctx.fillText('[E] Falar', npc.x, npc.y + 30);
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
         });
 
-        // Desenhar Jogador
-        ctx.fillStyle = player.color;
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, player.size / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        // ATUALIZAÇÃO DA LÓGICA DO JOGO
+        function update() {
+            if (gameState !== 'PLAYING') return;
 
-        // Nome do Jogador
-        ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 13px Segoe UI';
-        ctx.textAlign = 'center';
-        ctx.fillText(player.name, player.x, player.y - 20);
-    }
+            // Movimentação do Jogador
+            if ((keys['w'] || keys['arrowup']) && player.y > player.size) player.y -= player.speed;
+            if ((keys['s'] || keys['arrowdown']) && player.y < canvas.height - player.size) player.y += player.speed;
+            if ((keys['a'] || keys['arrowleft']) && player.x > player.size) player.x -= player.speed;
+            if ((keys['d'] || keys['arrowright']) && player.x < canvas.width - player.size) player.x += player.speed;
 
-    function gameLoop() {
-        update();
-        draw();
-        if (gameState === 'PLAYING' || gameState === 'DIALOGUE') {
-            requestAnimationFrame(gameLoop);
+            // Crescimento das plantas
+            farmPlots.forEach(plot => {
+                if (plot.state === 'growing') {
+                    plot.timer++;
+                    if (plot.timer > 300) { // ~5 segundos
+                        plot.state = 'ready';
+                    }
+                }
+            });
+
+            // Atualiza HUD
+            document.getElementById('usdc-val').innerText = player.usdc;
+            document.getElementById('seeds-val').innerText = player.seeds;
+            document.getElementById('crops-val').innerText = player.crops;
         }
-    }
-</script>
+
+        // INTERAÇÕES (TECLA E)
+        function checkInteractions() {
+            // Interação com canteiros de plantação
+            farmPlots.forEach(plot => {
+                let dist = Math.hypot(player.x - (plot.x + 20), player.y - (plot.y + 20));
+                if (dist < 40) {
+                    if (plot.state === 'empty' && player.seeds > 0) {
+                        plot.state = 'growing';
+                        plot.timer = 0;
+                        player.seeds--;
+                    } else if (plot.state === 'ready') {
+                        plot.state = 'empty';
+                        player.crops++;
+                    }
+                }
+            });
+
+            // Interação com NPC (Educação Financeira)
+            let distNPC = Math.hypot(player.x - npc.x, player.y - npc.y);
+            if (distNPC < 40) {
+                openQuizDialog();
+            }
+
+            // Interação com Mercado (Venda de Colheita / Compra de Sementes)
+            let distMarket = Math.hypot(player.x - market.x, player.y - market.y);
+            if (distMarket < 50) {
+                openMarketDialog();
+            }
+        }
+
+        // DIÁLOGOS E QUIZ
+        function openQuizDialog() {
+            gameState = 'DIALOG';
+            const dialog = document.getElementById('dialog-box');
+            document.getElementById('dialog-title').innerText = "Mentor Financeiro Arc";
+            document.getElementById('dialog-text').innerText = "Pergunta de Finanças: O que acontece se investires a tua colheita em Staking de USDC em vez de guardar no inventário?";
+            
+            const options = document.getElementById('dialog-options');
+            options.innerHTML = `
+                <button class="dialog-btn" onclick="answerQuiz(true)">Gera rendimento passivo com o tempo</button>
+                <button class="dialog-btn" onclick="answerQuiz(false)">Perdes o teu dinheiro imediatamente</button>
+            `;
+            dialog.style.display = 'flex';
+        }
+
+        function answerQuiz(isCorrect) {
+            if (isCorrect) {
+                player.usdc += 25;
+                alert("Correto! Ganhaste +25 USDC de rendimentos!");
+            } else {
+                alert("Incorreto. O staking gera rendimentos contínuos de forma segura.");
+            }
+            closeDialog();
+        }
+
+        function openMarketDialog() {
+            gameState = 'DIALOG';
+            const dialog = document.getElementById('dialog-box');
+            document.getElementById('dialog-title').innerText = "Mercado da Fazenda";
+            document.getElementById('dialog-text').innerText = `Tens ${player.crops} colheitas e ${player.usdc} USDC. O que queres fazer?`;
+
+            const options = document.getElementById('dialog-options');
+            options.innerHTML = `
+                <button class="dialog-btn" onclick="buySeeds()">Comprar Semente (10 USDC)</button>
+                <button class="dialog-btn" onclick="sellCrops()">Vender Toda Colheita (+20 USDC/unid)</button>
+                <button class="dialog-btn" onclick="closeDialog()">Sair</button>
+            `;
+            dialog.style.display = 'flex';
+        }
+
+        function buySeeds() {
+            if (player.usdc >= 10) {
+                player.usdc -= 10;
+                player.seeds++;
+                openMarketDialog();
+            } else {
+                alert("USDC insuficiente!");
+            }
+        }
+
+        function sellCrops() {
+            if (player.crops > 0) {
+                player.usdc += player.crops * 20;
+                player.crops = 0;
+                openMarketDialog();
+            } else {
+                alert("Não tens colheitas para vender!");
+            }
+        }
+
+        function closeDialog() {
+            document.getElementById('dialog-box').style.display = 'none';
+            gameState = 'PLAYING';
+        }
+
+        // DESENHO DO MAPA E ELEMENTOS NA TELA
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // DESENHAR TERRENO DO MAPA ABERTO
+            ctx.fillStyle = "#2d3e30";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Caminhos de terra
+            ctx.fillStyle = "#4a3b2c";
+            ctx.fillRect(150, 100, 250, 200);
+
+            // Canteiros de Plantação
+            farmPlots.forEach(plot => {
+                if (plot.state === 'empty') ctx.fillStyle = "#654321";
+                else if (plot.state === 'growing') ctx.fillStyle = "#2e8b57";
+                else if (plot.state === 'ready') ctx.fillStyle = "#70e000";
+
+                ctx.fillRect(plot.x, plot.y, 45, 45);
+                ctx.strokeStyle = "#3d2612";
+                ctx.strokeRect(plot.x, plot.y, 45, 45);
+
+                // Destaque visual para pronto
+                if (plot.state === 'ready') {
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "10px sans-serif";
+                    ctx.fillText("COLHER", plot.x + 2, plot.y + 25);
+                }
+            });
+
+            // Desenhar NPC
+            ctx.fillStyle = "#00f0ff";
+            ctx.beginPath();
+            ctx.arc(npc.x, npc.y, npc.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "12px sans-serif";
+            ctx.fillText(npc.name, npc.x - 45, npc.y - 30);
+
+            // Desenhar Mercado
+            ctx.fillStyle = "#7000ff";
+            ctx.fillRect(market.x, market.y, market.size, market.size);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(market.name, market.x - 10, market.y - 10);
+
+            // Desenhar Jogador
+            ctx.fillStyle = "#ff007f";
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // LOOP PRINCIPAL DO JOGO
+        function gameLoop() {
+            update();
+            draw();
+            if (gameState === 'PLAYING' || gameState === 'DIALOG') {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+    </script>
 </body>
 </html>
